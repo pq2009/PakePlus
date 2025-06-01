@@ -1,22 +1,515 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <link rel="stylesheet" href="styles.css" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>PakePlus App</title>
-        <script type="module" src="/main.js" defer></script>
-    </head>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中华美食烹饪助手</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .recipe-card {
+            background: linear-gradient(135deg, #fff9f9 0%, #fff 100%);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        .recipe-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        .dish-image {
+            height: 250px;
+            object-fit: cover;
+            border-radius: 12px 12px 0 0;
+        }
+        .ingredient-list li::before {
+            content: "•";
+            color: #f56565;
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .chinese-pattern {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2IiBoZWlnaHQ9IjYiIHZpZXdCb3g9IjAgMCA2IDYiPgo8cGF0aCBkPSJNIDAgMCBMIDAgMSBMIDEgMSBMIDEgMCBMIDAgMCBMIDAgMiBMIDIgMiBMIDIgMCBMIDAgMCBMIDAgMyBMIDMgMyBMIDMgMCBMIDAgMCBMIDAgNCBMIDQgNCBMIDQgMCBMIDAgMCBMIDAgNSBMIDUgNSBMIDUgMCBMIDAgMCBMIDAgNiBMIDYgNiBMIDYgMCBMIDAgMCBaIiBmaWxsPSIjZjU2NTY1IiBvcGFjaXR5PSIwLjEiLz4KPC9zdmc+');
+            opacity: 0.1;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Header -->
+    <header class="bg-red-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <i class="fas fa-utensils text-3xl mr-3"></i>
+                    <h1 class="text-2xl md:text-3xl font-bold">中华美食烹饪助手</h1>
+                </div>
+                <div class="relative w-full md:w-1/3">
+                    <input type="text" id="recipeInput" placeholder="输入菜谱名称，如：宫保鸡丁、红烧肉..." 
+                           class="w-full px-4 py-3 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-400">
+                    <button id="searchBtn" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-red-700 text-white px-4 py-2 rounded-full hover:bg-red-800 transition">
+                        <i class="fas fa-search"></i> 搜索
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
 
-    <body>
-        <main class="container">
-            <h1>Welcome to PakePlus</h1>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Hero Section -->
+        <section class="mb-12 bg-white rounded-xl shadow-md overflow-hidden chinese-pattern">
+            <div class="flex flex-col md:flex-row">
+                <div class="md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">探索中华美食的奥秘</h2>
+                    <p class="text-lg text-gray-600 mb-6">从八大菜系到地方小吃，输入您想了解的菜谱名称，我们将为您提供详细的烹饪方法和技巧。</p>
+                    <div class="flex flex-wrap gap-3">
+                        <span class="px-4 py-2 bg-red-100 text-red-700 rounded-full text-sm font-medium">川菜</span>
+                        <span class="px-4 py-2 bg-red-100 text-red-700 rounded-full text-sm font-medium">粤菜</span>
+                        <span class="px-4 py-2 bg-red-100 text-red-700 rounded-full text-sm font-medium">鲁菜</span>
+                        <span class="px-4 py-2 bg-red-100 text-red-700 rounded-full text-sm font-medium">苏菜</span>
+                        <span class="px-4 py-2 bg-red-100 text-red-700 rounded-full text-sm font-medium">浙菜</span>
+                        <span class="px-4 py-2 bg-red-100 text-red-700 rounded-full text-sm font-medium">闽菜</span>
+                        <span class="px-4 py-2 bg-red-100 text-red-700 rounded-full text-sm font-medium">湘菜</span>
+                        <span class="px-4 py-2 bg-red-100 text-red-700 rounded-full text-sm font-medium">徽菜</span>
+                    </div>
+                </div>
+                <div class="md:w-1/2">
+                    <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80" 
+                         alt="Chinese Cuisine" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </section>
 
-            <form class="row" id="greet-form">
-                <input id="greet-input" placeholder="Enter a name..." />
-                <button type="submit">Greet</button>
-            </form>
-            <p id="greet-msg"></p>
-        </main>
-    </body>
+        <!-- Recipe Display Section -->
+        <section id="recipeSection" class="hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">为您推荐的菜谱</h2>
+                <button id="randomBtn" class="flex items-center px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">
+                    <i class="fas fa-random mr-2"></i> 随机推荐
+                </button>
+            </div>
+
+            <div id="recipeContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Recipe cards will be inserted here by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="hidden flex flex-col items-center justify-center py-12">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-red-500 mb-4"></div>
+            <p class="text-gray-600">正在为您搜索菜谱，请稍候...</p>
+        </div>
+
+        <!-- Popular Recipes -->
+        <section class="mt-16">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">热门菜谱推荐</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition" onclick="generateRecipe('宫保鸡丁')">
+                    <img src="https://images.unsplash.com/photo-1565557623262-b51c2513a641?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" 
+                         alt="宫保鸡丁" class="w-full h-32 object-cover">
+                    <div class="p-3">
+                        <h3 class="font-medium text-gray-800">宫保鸡丁</h3>
+                        <p class="text-sm text-gray-500">川菜经典</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition" onclick="generateRecipe('红烧肉')">
+                    <img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" 
+                         alt="红烧肉" class="w-full h-32 object-cover">
+                    <div class="p-3">
+                        <h3 class="font-medium text-gray-800">红烧肉</h3>
+                        <p class="text-sm text-gray-500">家常美味</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition" onclick="generateRecipe('麻婆豆腐')">
+                    <img src="https://images.unsplash.com/photo-1542528186-1d4d5d5e9c1a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" 
+                         alt="麻婆豆腐" class="w-full h-32 object-cover">
+                    <div class="p-3">
+                        <h3 class="font-medium text-gray-800">麻婆豆腐</h3>
+                        <p class="text-sm text-gray-500">麻辣鲜香</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition" onclick="generateRecipe('北京烤鸭')">
+                    <img src="https://images.unsplash.com/photo-1582284540020-8acbe03f4924?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" 
+                         alt="北京烤鸭" class="w-full h-32 object-cover">
+                    <div class="p-3">
+                        <h3 class="font-medium text-gray-800">北京烤鸭</h3>
+                        <p class="text-sm text-gray-500">京菜代表</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between">
+                <div class="mb-6 md:mb-0">
+                    <h3 class="text-xl font-bold mb-4">中华美食烹饪助手</h3>
+                    <p class="text-gray-400 max-w-md">传承中华美食文化，分享经典烹饪技艺，让每个人都能成为厨房里的艺术家。</p>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
+                    <div>
+                        <h4 class="font-bold mb-3">快速链接</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-gray-400 hover:text-white transition">首页</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white transition">菜谱大全</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white transition">烹饪技巧</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold mb-3">关于我们</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-gray-400 hover:text-white transition">团队介绍</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white transition">联系我们</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white transition">加入我们</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold mb-3">关注我们</h4>
+                        <div class="flex space-x-4">
+                            <a href="#" class="text-gray-400 hover:text-white transition text-xl"><i class="fab fa-weixin"></i></a>
+                            <a href="#" class="text-gray-400 hover:text-white transition text-xl"><i class="fab fa-weibo"></i></a>
+                            <a href="#" class="text-gray-400 hover:text-white transition text-xl"><i class="fab fa-douyin"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400">
+                <p>© 2023 中华美食烹饪助手. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Sample recipe data
+        const recipeDatabase = {
+            "宫保鸡丁": {
+                name: "宫保鸡丁",
+                cuisine: "川菜",
+                difficulty: "中等",
+                time: "30分钟",
+                servings: "2-3人",
+                image: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
+                description: "宫保鸡丁是一道闻名中外的特色传统名菜，以鸡肉为主料，佐以花生米、黄瓜、辣椒等辅料烹制而成。红而不辣、辣而不猛、香辣味浓、肉质滑脆。",
+                ingredients: [
+                    "鸡胸肉 300克",
+                    "花生米 50克",
+                    "干辣椒 6-8个",
+                    "花椒 1小把",
+                    "葱 1根",
+                    "姜 适量",
+                    "蒜 3瓣",
+                    "料酒 1汤匙",
+                    "生抽 2汤匙",
+                    "老抽 1茶匙",
+                    "醋 1汤匙",
+                    "糖 1汤匙",
+                    "淀粉 适量",
+                    "盐 适量",
+                    "食用油 适量"
+                ],
+                steps: [
+                    "1. 鸡胸肉切丁，用料酒、生抽、淀粉腌制15分钟。",
+                    "2. 干辣椒剪成小段，葱切段，姜蒜切末。",
+                    "3. 调制宫保汁：生抽、老抽、醋、糖、淀粉加少量水调匀。",
+                    "4. 热锅凉油，先炒香花生米后盛出备用。",
+                    "5. 锅中留底油，爆香花椒和干辣椒，然后加入鸡丁快速翻炒至变色。",
+                    "6. 加入葱姜蒜炒香，倒入调好的宫保汁，大火收汁。",
+                    "7. 最后加入花生米翻炒均匀即可出锅。"
+                ],
+                tips: "鸡丁腌制时加入淀粉可以使肉质更嫩滑。炒制过程要快，保持鸡肉的嫩度。"
+            },
+            "红烧肉": {
+                name: "红烧肉",
+                cuisine: "家常菜",
+                difficulty: "中等",
+                time: "1.5小时",
+                servings: "3-4人",
+                image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
+                description: "红烧肉是一道著名的大众菜肴，以五花肉为制作主料，肥瘦相间，香甜松软，入口即化。红烧肉在我国各地流传甚广，做法多达二三十种。",
+                ingredients: [
+                    "五花肉 500克",
+                    "冰糖 30克",
+                    "生抽 3汤匙",
+                    "老抽 1汤匙",
+                    "料酒 2汤匙",
+                    "姜 5片",
+                    "葱 1根",
+                    "八角 2颗",
+                    "桂皮 1小段",
+                    "香叶 2片",
+                    "清水 适量"
+                ],
+                steps: [
+                    "1. 五花肉切3厘米见方的块，冷水下锅焯水后捞出沥干。",
+                    "2. 锅中不放油，直接放入五花肉煸炒至表面微黄出油，盛出备用。",
+                    "3. 锅中留少许油，放入冰糖小火炒至融化并呈琥珀色。",
+                    "4. 迅速倒入五花肉翻炒上色，加入料酒、生抽、老抽翻炒均匀。",
+                    "5. 加入葱姜、八角、桂皮、香叶等香料，倒入热水没过肉面。",
+                    "6. 大火烧开后转小火慢炖1小时左右，至肉质酥烂。",
+                    "7. 最后开大火收汁，至汤汁浓稠即可。"
+                ],
+                tips: "炒糖色时火候要小，避免炒糊发苦。炖煮时间要足够，肉质才会酥烂入味。"
+            },
+            "麻婆豆腐": {
+                name: "麻婆豆腐",
+                cuisine: "川菜",
+                difficulty: "简单",
+                time: "20分钟",
+                servings: "2-3人",
+                image: "https://images.unsplash.com/photo-1542528186-1d4d5d5e9c1a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
+                description: "麻婆豆腐是四川省传统名菜之一，主要原料为豆腐、肉末、辣椒和花椒等。麻来自花椒，辣来自辣椒，这道菜突出了川菜'麻辣'的特点。",
+                ingredients: [
+                    "嫩豆腐 1块(约400克)",
+                    "牛肉末 100克",
+                    "郫县豆瓣酱 2汤匙",
+                    "豆豉 1汤匙",
+                    "辣椒粉 1茶匙",
+                    "花椒粉 1茶匙",
+                    "蒜末 2瓣",
+                    "姜末 适量",
+                    "葱花 适量",
+                    "生抽 1汤匙",
+                    "料酒 1汤匙",
+                    "淀粉 1茶匙",
+                    "高汤或清水 适量",
+                    "食用油 适量"
+                ],
+                steps: [
+                    "1. 豆腐切2厘米见方的块，放入加盐的沸水中焯烫1分钟后捞出沥干。",
+                    "2. 热锅凉油，放入牛肉末煸炒至变色，加入料酒去腥。",
+                    "3. 加入郫县豆瓣酱、豆豉、姜蒜末炒香，炒出红油。",
+                    "4. 加入辣椒粉炒匀，倒入适量高汤或清水烧开。",
+                    "5. 轻轻放入豆腐块，小火煮3-5分钟让豆腐入味。",
+                    "6. 分次淋入水淀粉勾芡，使汤汁浓稠能裹住豆腐。",
+                    "7. 装盘后撒上花椒粉和葱花即可。"
+                ],
+                tips: "豆腐焯水可以去除豆腥味并增加韧性。勾芡要分次少量加入，达到理想浓稠度即可。"
+            },
+            "北京烤鸭": {
+                name: "北京烤鸭",
+                cuisine: "京菜",
+                difficulty: "高难",
+                time: "2天(含腌制)",
+                servings: "4-6人",
+                image: "https://images.unsplash.com/photo-1582284540020-8acbe03f4924?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
+                description: "北京烤鸭是具有世界声誉的北京著名菜式，用料为优质肉食鸭北京鸭，果木炭火烤制，色泽红润，肉质肥而不腻，外脆里嫩。",
+                ingredients: [
+                    "北京填鸭 1只(约2.5公斤)",
+                    "麦芽糖 100克",
+                    "白醋 50毫升",
+                    "料酒 50毫升",
+                    "五香粉 适量",
+                    "盐 适量",
+                    "甜面酱 适量",
+                    "黄瓜 1根",
+                    "葱白 适量",
+                    "薄饼 适量"
+                ],
+                steps: [
+                    "1. 鸭子处理干净后，用开水烫皮使毛孔收缩，表皮绷紧。",
+                    "2. 麦芽糖、白醋、料酒和适量水调成脆皮水，均匀刷在鸭身上。",
+                    "3. 将鸭子挂在通风处晾干12小时以上(最好24小时)。",
+                    "4. 烤箱预热200°C，鸭子腹内塞入苹果块增加香气。",
+                    "5. 鸭子放入烤箱，烤制40分钟后翻面，再烤30-40分钟。",
+                    "6. 期间注意观察颜色，必要时加盖锡纸防止烤焦。",
+                    "7. 烤好后片成薄片，搭配甜面酱、黄瓜条、葱丝和薄饼食用。"
+                ],
+                tips: "晾干过程非常重要，是皮脆的关键。家庭制作可简化步骤，但风味会有所差异。"
+            },
+            "鱼香肉丝": {
+                name: "鱼香肉丝",
+                cuisine: "川菜",
+                difficulty: "中等",
+                time: "25分钟",
+                servings: "2-3人",
+                image: "https://images.unsplash.com/photo-1585032226651-759b368d7246?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=792&q=80",
+                description: "鱼香肉丝是一道特色传统名菜，以鱼香调味而得名。成菜具有咸、甜、酸、辣、鲜、香等特点，用于烹制菜肴滋味极佳。",
+                ingredients: [
+                    "猪里脊肉 250克",
+                    "黑木耳 10朵",
+                    "胡萝卜 半根",
+                    "青椒 1个",
+                    "豆瓣酱 1汤匙",
+                    "姜末 1茶匙",
+                    "蒜末 2瓣",
+                    "葱花 适量",
+                    "生抽 2汤匙",
+                    "醋 1汤匙",
+                    "糖 1汤匙",
+                    "料酒 1汤匙",
+                    "淀粉 适量",
+                    "食用油 适量"
+                ],
+                steps: [
+                    "1. 里脊肉切丝，用料酒、生抽、淀粉腌制10分钟。",
+                    "2. 黑木耳泡发切丝，胡萝卜、青椒切丝备用。",
+                    "3. 调制鱼香汁：生抽、醋、糖、淀粉加少量水调匀。",
+                    "4. 热锅凉油，先将肉丝滑炒至变色后盛出。",
+                    "5. 锅中留底油，爆香姜蒜末和豆瓣酱，炒出红油。",
+                    "6. 加入胡萝卜、青椒、木耳丝翻炒至断生。",
+                    "7. 倒入肉丝和鱼香汁，快速翻炒均匀，撒上葱花即可。"
+                ],
+                tips: "鱼香汁的比例可根据个人口味调整。炒制过程要快，保持蔬菜的脆嫩口感。"
+            },
+            "清蒸鲈鱼": {
+                name: "清蒸鲈鱼",
+                cuisine: "粤菜",
+                difficulty: "简单",
+                time: "20分钟",
+                servings: "2人",
+                image: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
+                description: "清蒸鲈鱼是广东省传统名菜，以鲈鱼为制作主料，清蒸的烹饪方式最大程度保留了鱼的原汁原味，肉质鲜嫩，营养丰富。",
+                ingredients: [
+                    "新鲜鲈鱼 1条(约500克)",
+                    "姜 5片",
+                    "葱 2根",
+                    "料酒 1汤匙",
+                    "蒸鱼豉油 2汤匙",
+                    "食用油 2汤匙",
+                    "盐 少许"
+                ],
+                steps: [
+                    "1. 鲈鱼处理干净，两面各划几刀，抹少许盐和料酒腌制10分钟。",
+                    "2. 鱼肚内塞入姜片和葱段，鱼身上也放几片姜。",
+                    "3. 蒸锅水烧开后，放入鲈鱼大火蒸8-10分钟(视鱼大小调整)。",
+                    "4. 蒸好后倒掉盘中的水，去除姜片和葱段。",
+                    "5. 在鱼身上铺上新鲜的葱丝，淋上热油激出香味。",
+                    "6. 最后沿盘边倒入蒸鱼豉油即可。"
+                ],
+                tips: "蒸鱼时间要严格控制，过久肉质会变老。蒸好后倒掉的水有腥味，一定要倒掉。"
+            }
+        };
+
+        // DOM elements
+        const recipeInput = document.getElementById('recipeInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const randomBtn = document.getElementById('randomBtn');
+        const recipeSection = document.getElementById('recipeSection');
+        const recipeContainer = document.getElementById('recipeContainer');
+        const loadingState = document.getElementById('loadingState');
+
+        // Event listeners
+        searchBtn.addEventListener('click', () => {
+            const recipeName = recipeInput.value.trim();
+            if (recipeName) {
+                generateRecipe(recipeName);
+            }
+        });
+
+        recipeInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const recipeName = recipeInput.value.trim();
+                if (recipeName) {
+                    generateRecipe(recipeName);
+                }
+            }
+        });
+
+        randomBtn.addEventListener('click', () => {
+            const recipeNames = Object.keys(recipeDatabase);
+            const randomIndex = Math.floor(Math.random() * recipeNames.length);
+            generateRecipe(recipeNames[randomIndex]);
+        });
+
+        // Generate recipe function
+        function generateRecipe(recipeName) {
+            // Show loading state
+            recipeSection.classList.add('hidden');
+            loadingState.classList.remove('hidden');
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                const recipe = recipeDatabase[recipeName];
+                
+                if (recipe) {
+                    // Clear previous results
+                    recipeContainer.innerHTML = '';
+                    
+                    // Create recipe card
+                    const recipeCard = document.createElement('div');
+                    recipeCard.className = 'recipe-card rounded-xl overflow-hidden';
+                    recipeCard.innerHTML = `
+                        <img src="${recipe.image}" alt="${recipe.name}" class="dish-image w-full">
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="text-2xl font-bold text-gray-800">${recipe.name}</h3>
+                                    <p class="text-gray-600">${recipe.cuisine} • ${recipe.difficulty} • ${recipe.time}</p>
+                                </div>
+                                <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">${recipe.servings}</span>
+                            </div>
+                            
+                            <p class="text-gray-700 mb-4">${recipe.description}</p>
+                            
+                            <div class="mb-6">
+                                <h4 class="font-bold text-lg text-gray-800 mb-3 flex items-center">
+                                    <i class="fas fa-utensils mr-2 text-red-500"></i> 食材准备
+                                </h4>
+                                <ul class="ingredient-list space-y-2 text-gray-700 pl-5">
+                                    ${recipe.ingredients.map(ing => `<li>${ing}</li>`).join('')}
+                                </ul>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <h4 class="font-bold text-lg text-gray-800 mb-3 flex items-center">
+                                    <i class="fas fa-list-ol mr-2 text-red-500"></i> 烹饪步骤
+                                </h4>
+                                <ol class="space-y-3 text-gray-700 pl-5">
+                                    ${recipe.steps.map(step => `<li>${step}</li>`).join('')}
+                                </ol>
+                            </div>
+                            
+                            <div class="bg-red-50 p-4 rounded-lg">
+                                <h4 class="font-bold text-red-700 mb-2 flex items-center">
+                                    <i class="fas fa-lightbulb mr-2"></i> 小贴士
+                                </h4>
+                                <p class="text-red-700">${recipe.tips}</p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    recipeContainer.appendChild(recipeCard);
+                    
+                    // Update input field
+                    recipeInput.value = recipe.name;
+                    
+                    // Show results
+                    recipeSection.classList.remove('hidden');
+                } else {
+                    // Recipe not found
+                    recipeContainer.innerHTML = `
+                        <div class="col-span-full text-center py-12">
+                            <i class="fas fa-search text-5xl text-gray-400 mb-4"></i>
+                            <h3 class="text-2xl font-bold text-gray-700 mb-2">未找到相关菜谱</h3>
+                            <p class="text-gray-600 mb-4">我们暂时没有"${recipeName}"的菜谱，请尝试其他名称。</p>
+                            <button onclick="window.location.reload()" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                                <i class="fas fa-undo mr-2"></i> 返回首页
+                            </button>
+                        </div>
+                    `;
+                    recipeSection.classList.remove('hidden');
+                }
+                
+                // Hide loading state
+                loadingState.classList.add('hidden');
+                
+                // Scroll to results
+                recipeSection.scrollIntoView({ behavior: 'smooth' });
+            }, 1500);
+        }
+
+        // Make generateRecipe available globally for quick links
+        window.generateRecipe = generateRecipe;
+    </script>
+</body>
 </html>
