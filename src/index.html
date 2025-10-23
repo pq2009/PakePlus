@@ -1,22 +1,202 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <link rel="stylesheet" href="styles.css" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>PakePlus App</title>
-        <script type="module" src="/main.js" defer></script>
-    </head>
-
-    <body>
-        <main class="container">
-            <h1>Welcome to PakePlus</h1>
-
-            <form class="row" id="greet-form">
-                <input id="greet-input" placeholder="Enter a name..." />
-                <button type="submit">Greet</button>
-            </form>
-            <p id="greet-msg"></p>
-        </main>
-    </body>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="专业的PDF内容提取工具，支持导出Excel表格">
+    <meta name="keywords" content="PDF提取,PDF转Excel,文本提取">
+    <title>PDF内容提取工具 - 专业版</title>
+    
+    <!-- 引入样式文件 -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- 引入Google字体（可选，如果需要更好的字体效果） -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 主应用容器 -->
+    <div class="app-container">
+        <!-- 主卡片 -->
+        <div class="main-card">
+            <!-- 头部 -->
+            <header class="header">
+                <div class="header-content">
+                    <div class="app-icon">📦</div>
+                    <h1 class="app-title">快递单信息提取工具</h1>
+                    <p class="app-subtitle">快速提取订单号、收件人信息，导出Excel表格</p>
+                </div>
+        </header>
+        
+            <!-- 主内容区域 -->
+            <div class="content-wrapper">
+                <!-- 上传与控制区域 -->
+                <div class="section">
+                    <h2 class="section-title">
+                        <span class="section-icon">📤</span>
+                        上传PDF文件
+                    </h2>
+                    
+                    <!-- 上传区域 -->
+                    <div class="upload-zone" id="dropArea">
+                        <div class="upload-content">
+                            <span class="upload-icon">📄</span>
+                            <p class="upload-text">拖放PDF文件到此处</p>
+                            <p class="upload-hint">支持选择多个文件同时处理</p>
+                        </div>
+                        <input type="file" id="fileInput" class="file-input" accept=".pdf" multiple>
+                </div>
+                
+                    <!-- 文件信息卡片 -->
+                    <div id="fileInfoCard" class="file-info-card hidden">
+                        <div class="file-info-item">
+                            <span class="file-info-label">文件名称:</span>
+                            <span class="file-info-value" id="fileName">-</span>
+                        </div>
+                        <div class="file-info-item">
+                            <span class="file-info-label">文件大小:</span>
+                            <span class="file-info-value" id="fileSize">-</span>
+                        </div>
+                        <div class="file-info-item">
+                            <span class="file-info-label">总页数:</span>
+                            <span class="file-info-value" id="pageCount">-</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 状态消息 -->
+                    <div id="statusMessage" class="status-message hidden"></div>
+                    
+                    <!-- 提取选项 -->
+                    <div class="extract-options">
+                        <div class="options-title">
+                            <span>⚙️</span>
+                            提取选项
+                        </div>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="appendExtToName" checked>
+                                <label for="appendExtToName">将分机号拼接到姓名末尾</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="appendExtToAddress" checked>
+                                <label for="appendExtToAddress">将分机号拼接到地址末尾</label>
+                            </div>
+                        </div>
+                        <div class="address-preview">
+                            <small>示例：陈*[0499]、河北省衡水市景县[0499]</small>
+                        </div>
+                    </div>
+                    
+                    <!-- 操作按钮组 -->
+                    <div class="btn-group">
+                        <button id="extractBtn" class="btn btn-primary" disabled>
+                            <span class="btn-icon">🔍</span>
+                            提取内容
+                        </button>
+                        <button id="clearBtn" class="btn btn-secondary">
+                            <span class="btn-icon">🗑️</span>
+                            清空
+                        </button>
+                    </div>
+                    
+                    <!-- 信息面板 -->
+                    <div class="info-panel">
+                        <h3 class="info-title">
+                            <span>💡</span>
+                            提取内容
+                        </h3>
+                        <ul class="info-list">
+                            <li class="info-list-item">订单号（69开头19位数字）</li>
+                            <li class="info-list-item">收件人姓名</li>
+                            <li class="info-list-item">收件人电话（含分机号）</li>
+                            <li class="info-list-item">收件地址</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- 结果显示区域 -->
+                <div class="section">
+                    <h2 class="section-title">
+                        <span class="section-icon">📊</span>
+                        提取结果
+                    </h2>
+                    
+                    <!-- 结果显示框 -->
+                    <div id="resultBox" class="result-display">
+                        <div class="result-empty">
+                            <div>
+                                <div style="font-size: 2rem; margin-bottom: 1rem;">📝</div>
+                                <div>提取的内容将显示在这里...</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 导出按钮组 -->
+                    <div class="btn-group">
+                        <button id="exportExcelBtn" class="btn btn-success" disabled>
+                            <span class="btn-icon">📊</span>
+                            导出Excel
+                        </button>
+                        <button id="copyBtn" class="btn btn-primary" disabled>
+                            <span class="btn-icon">📋</span>
+                            复制文本
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 使用说明 -->
+            <div class="content-wrapper">
+                <div class="info-panel" style="grid-column: 1 / -1;">
+                    <h3 class="info-title">
+                        <span>📖</span>
+                        使用说明
+                    </h3>
+                        <ul class="info-list">
+                            <li class="info-list-item">
+                                <strong>上传PDF：</strong>拖放PDF文件到上传区域，或点击选择文件
+                            </li>
+                            <li class="info-list-item">
+                                <strong>自动提取：</strong>系统自动识别订单号、收件人姓名、电话、地址
+                            </li>
+                            <li class="info-list-item">
+                                <strong>导出Excel：</strong>生成规范的表格文件，包含所有订单信息
+                            </li>
+                            <li class="info-list-item">
+                                <strong>格式要求：</strong>订单号为69开头19位数字，电话格式：11位转4位
+                            </li>
+                            <li class="info-list-item">
+                                <strong>隐私保护：</strong>所有处理都在浏览器本地完成，数据不会上传
+                            </li>
+                        </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 页脚 -->
+        <footer class="footer">
+            <p class="footer-text">© 2025 快递单信息提取工具 | 基于 PDF.js 和 SheetJS 构建</p>
+            <p class="footer-text">所有处理均在本地完成，确保您的数据安全</p>
+        </footer>
+    </div>
+    
+    <!-- 加载动画遮罩 -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p class="loading-text" id="loadingText">正在处理...</p>
+        </div>
+    </div>
+    
+    <!-- 引入第三方库 -->
+    <script src="lib/pdf.min.js"></script>
+    <script src="lib/xlsx.core.min.js"></script>
+    
+    <!-- 引入订单解析器 -->
+    <script src="js/order-parser.js"></script>
+    
+    <!-- 引入主应用脚本 -->
+    <script src="js/app.js"></script>
+</body>
 </html>
